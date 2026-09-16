@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApexDrive AI — Intelligent Car Rental Concierge</title>
+  <meta name="description" content="Local CPU-based Conversational AI for ApexDrive Car Rental. Real-time streaming, strict domain policies, and instant booking quotes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- CDN Markdown Parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
+              <circle cx="7" cy="17" r="2"></circle>
+              <path d="M9 17h6"></path>
+              <circle cx="17" cy="17" r="2"></circle>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h2>ApexDrive</h2>
+            <span class="badge-tag">AI Concierge</span>
+          </div>
+        </div>
+        <button id="new-chat-btn" class="btn btn-primary btn-new-chat" title="Start New Session">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Session</span>
+        </button>
+      </div>
+
+      <!-- Quick Fleet & Policies Drawer -->
+      <div class="sidebar-section">
+        <div class="section-title">Fleet & Rates</div>
+        <div class="fleet-chips">
+          <div class="fleet-chip">
+            <span class="chip-name">Economy</span>
+            <span class="chip-price">$45/day</span>
+          </div>
+          <div class="fleet-chip">
+            <span class="chip-name">SUV (AWD)</span>
+            <span class="chip-price">$75/day</span>
+          </div>
+          <div class="fleet-chip">
+            <span class="chip-name">Electric (Tesla)</span>
+            <span class="chip-price">$85/day</span>
+          </div>
+          <div class="fleet-chip">
+            <span class="chip-name">Luxury (BMW/Merc)</span>
+            <span class="chip-price">$135/day</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">Insurance Options</div>
+        <div class="insurance-summary">
+          <div class="info-row">
+            <strong>Standard CDW:</strong> $15/day ($500 excess)
+          </div>
+          <div class="info-row">
+            <strong>Zero Excess:</strong> $28/day ($0 excess)
+          </div>
+          <div class="info-row">
+            <strong>Deposit:</strong> $200 pre-auth hold
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="engine-status" id="engine-status">
+          <span class="status-indicator online"></span>
+          <div class="status-details">
+            <span class="status-title">Local Engine Ready</span>
+            <span class="status-subtitle" id="model-label">Qwen 2.5 3B (CPU Q4)</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <main class="chat-workspace">
+      <!-- Top Navbar -->
+      <header class="chat-header">
+        <div class="header-left">
+          <button id="toggle-sidebar-btn" class="icon-btn mobile-only" title="Toggle Sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="chat-title-info">
+            <h1>Car Rental Booking Assistant</h1>
+            <p class="subtitle">Fully local CPU inference • Zero cloud APIs • Real-time WebSocket streaming</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="benchmark-btn" class="btn btn-secondary btn-sm" title="Run Local CPU Latency Benchmark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span>Benchmark CPU</span>
+          </button>
+          <button id="clear-chat-btn" class="btn btn-secondary btn-sm" title="Reset Current Session">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Reset</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Message History Container -->
+      <section class="messages-scroll-area" id="messages-container">
+        <!-- Messages will be injected here dynamically -->
+      </section>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="suggestions-container" id="suggestions">
+        <span class="suggestions-label">Try asking:</span>
+        <button class="chip" data-prompt="What SUV options do you have for a family of 4?">Family SUV options</button>
+        <button class="chip" data-prompt="I need an Electric car for 4 days. What is the total quote with Zero Excess insurance?">Electric Car 4-Day Quote</button>
+        <button class="chip" data-prompt="Can I rent a car if I am 22 years old? What are the policies?">Under 25 Age Policy</button>
+        <button class="chip" data-prompt="Can you write a Python script to sort a list?" data-adversarial="true">Test Guardrail (Off-Topic)</button>
+      </div>
+
+      <!-- Chat Input Bar -->
+      <footer class="chat-input-wrapper">
+        <form id="chat-form" class="chat-input-form">
+          <textarea
+            id="user-input"
+            rows="1"
+            placeholder="Ask about car rental rates, insurance options, fleet, or make a reservation..."
+            autocomplete="off"
+          ></textarea>
+          <button type="submit" id="send-btn" class="btn-send" title="Send Message" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+        <div class="input-meta">
+          <span>Session ID: <code id="session-id-display">Connecting...</code></span>
+          <span id="connection-status-pill" class="pill pill-connected">Connected</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Benchmark Modal -->
+  <div id="benchmark-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>CPU Inference Benchmark</h3>
+        <button id="close-modal-btn" class="icon-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="benchmark-results">
+        <p class="benchmark-loading">Running 3 test inference passes on local CPU...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/chat.js"></script>
+</body>
+</html>
