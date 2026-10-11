@@ -55,6 +55,9 @@ async def lifespan(app: FastAPI):
         logger.info(f"Ollama local LLM status: {msg}")
     else:
         logger.warning(f"Ollama local LLM warning: {msg}")
+    # Warm local model/index before accepting traffic; failure leaves chat usable.
+    from app.retrieval import retriever
+    await retriever.retrieve("rental policies")
     yield
     logger.info("Shutting down ApexDrive server.")
 
@@ -159,7 +162,7 @@ async def run_benchmark(runs: int = 3):
     for i in range(runs):
         temp_session = await conversation_manager.get_or_create_session()
         temp_session.add_message("user", test_prompt)
-        prompt_messages = temp_session.get_prompt_messages(max_turns=settings.MAX_HISTORY_TURNS)
+        prompt_messages = await conversation_manager.prepare_messages(temp_session)
 
         gen = llm_engine.stream_chat(prompt_messages)
         final_metrics = None
@@ -286,7 +289,7 @@ async def websocket_chat_endpoint(websocket: WebSocket):
                 # Ensure turn-taking safety with per-session lock
                 async with session.lock:
                     session.add_message("user", user_content)
-                    prompt_messages = session.get_prompt_messages(max_turns=settings.MAX_HISTORY_TURNS)
+                    prompt_messages = await conversation_manager.prepare_messages(session)
 
                     accumulated_response = []
                     last_metrics = None

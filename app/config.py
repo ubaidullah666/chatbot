@@ -20,7 +20,13 @@ class Settings(BaseModel):
     # Memory & Context Window Management
     # Max turns to retain in prompt sliding window (each turn = 1 user + 1 assistant)
     MAX_HISTORY_TURNS: int = int(os.getenv("MAX_HISTORY_TURNS", "8"))
-    MAX_PROMPT_TOKENS: int = int(os.getenv("MAX_PROMPT_TOKENS", "2048"))
+    MAX_PROMPT_TOKENS: int = int(os.getenv("MAX_PROMPT_TOKENS", "7168"))
+
+    RAG_MODEL: str = os.getenv("RAG_MODEL", "models/all-MiniLM-L6-v2")
+    RAG_INDEX: str = os.getenv("RAG_INDEX", "data/index.sqlite3")
+    RAG_TIMEOUT: float = float(os.getenv("RAG_TIMEOUT", "0.9"))
+    RAG_MIN_SCORE: float = float(os.getenv("RAG_MIN_SCORE", "0.40"))
+    CONTEXT_WINDOW: int = int(os.getenv("CONTEXT_WINDOW", "8192"))
 
     # Business Domain Selection
     DOMAIN_NAME: str = "Car Rental Assistant"

@@ -142,6 +142,14 @@ class ConversationManager:
         self._sessions: Dict[str, Session] = {}
         self._global_lock = asyncio.Lock()
 
+    async def prepare_messages(self, session):
+        from app.retrieval import retriever
+        from app.rag_prompt import build_rag_messages
+        history = [{"role": m.role, "content": m.content} for m in session.history
+                   if m.role in {"user", "assistant"}][-settings.MAX_HISTORY_TURNS * 2:]
+        result = await retriever.retrieve(history[-1]["content"])
+        return build_rag_messages(history, result)
+
     async def get_or_create_session(self, session_id: Optional[str] = None) -> Session:
         async with self._global_lock:
             if not session_id or session_id not in self._sessions:
@@ -176,8 +184,8 @@ class ConversationManager:
     def get_welcome_message(self) -> str:
         return (
             "Hello and welcome to **ApexDrive**! 🚗\n\n"
-            "I'm your AI Rental Concierge. I can help you check fleet availability, "
-            "calculate exact rates, explore insurance packages, or finalize your reservation.\n\n"
+            "I'm your AI Rental Concierge. I can help you explore our documented fleet, "
+            "understand published rates and insurance, and plan a rental. Staff confirm availability and bookings.\n\n"
             "To get started, what dates or vehicle category (Economy, SUV, Electric, Luxury) are you looking for?"
         )
 

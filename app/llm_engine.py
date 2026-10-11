@@ -56,7 +56,8 @@ class LLMEngine:
             "options": {
                 "temperature": self.temperature,
                 "top_p": self.top_p,
-                "num_predict": settings.MAX_OUTPUT_TOKENS
+                "num_predict": settings.MAX_OUTPUT_TOKENS,
+                "num_ctx": settings.CONTEXT_WINDOW
             }
         }
 
